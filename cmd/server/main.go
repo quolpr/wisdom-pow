@@ -15,6 +15,11 @@ import (
 	"github.com/quolpr/wisdom-pow/internal/tcptransport"
 )
 
+const (
+	port       = 8080
+	difficulty = 24
+)
+
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -37,7 +42,7 @@ func main() {
 	}
 	quoteService := quotes.NewService(repo)
 
-	err = tcpserver.StartServer(ctx, 8080, tcptransport.NewHandler(powService, quoteService, 20))
+	err = tcpserver.StartServer(ctx, port, tcptransport.NewHandler(powService, quoteService, difficulty))
 
 	if err != nil && !errors.Is(err, context.Canceled) {
 		slog.ErrorContext(ctx, "Error starting server:", "error", err)
