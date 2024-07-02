@@ -10,14 +10,14 @@ Test task for Server Engineer
 
 ## Running
 
-Client:
-```bash
-make run-client
-```
-
 Server:
 ```bash
 make run-server
+```
+
+Client:
+```bash
+make run-client
 ```
 
 ## POW algorithm

@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +11,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/quolpr/wisdom-pow/pkg/powsolver"
 )
 
 type JSONQuote struct {
@@ -44,18 +44,12 @@ func main() {
 		os.Exit(1) //nolint:gocritic
 	}
 
-	for nonce := 0; ; nonce++ {
-		test := fmt.Sprintf("%s%d", challenge, nonce)
-		hash := sha256.Sum256([]byte(test))
-		hashString := hex.EncodeToString(hash[:])
-		if hashString[:difficulty/4] == strings.Repeat("0", difficulty/4) {
-			_, err := fmt.Fprintf(conn, "%d\n", nonce)
-			if err != nil {
-				log.Println("Error sending response:", err)
-				os.Exit(1)
-			}
-			break
-		}
+	solution := powsolver.FindSolution(challenge, difficulty)
+
+	_, err = fmt.Fprintf(conn, "%d\n", solution)
+	if err != nil {
+		log.Println("Error sending response:", err)
+		os.Exit(1)
 	}
 
 	res, err := reader.ReadBytes('\n')
